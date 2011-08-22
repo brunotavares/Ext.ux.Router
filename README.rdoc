@@ -16,68 +16,67 @@ All code is very well documented and descompressed.
 
 == Usage
 
-1. Copy Ext.ux.Router.js to your application. Folder suggested: {root}/app/ux;
-2. If you follow Ext JS MVC Guide, you'll have an app.js file, which is your application entry point. Don't forget
-to add ux folder path to it;
+1. Copy Ext.ux.Router.js to your application. Folder suggested {root}/app/ux;
+2. If you followed Ext JS MVC Guide, you'll have an app.js file, which is your application entry point. Don't forget to add ux folder path to it;
 
-	Ext.application({
-	    name: 'AM',
-	    autoCreateViewport: true,
-	    paths: {
-	        'Ext.ux': 'app/ux'
-	    }
-		...
-	});
-	
+    Ext.application({
+        name: 'AM',
+        autoCreateViewport: true,
+        paths: {
+            'Ext.ux': 'app/ux'
+        }
+        ...
+    });
+    
 3. Setup routes, The follow the pattern "key:value" as "url matcher:controler#action". Parameters are prefixed by :, e.g. users/:id/edit.
 It is also possible to pass parameters as plain querystrings, e.g. "help/list?viewID=3&details=1";
-	
-	Ext.application({
-	    ...
-
-	    /*
-	     * Here is where routes are defined.
-	     *  key:    URL matcher
-	     *  value:  controller + '#' + action to be invoked
-	     */
-	    routes: {
-	        '/': 'home#index',
-	        'users': 'users#list',
-	        'users/:id/edit': 'users#edit'
-	    }
-	});
-	
-4. Create your controllers and actions according to your routes
-
-	Ext.define('AM.controller.Home', {
-	    extend: 'Ext.app.Controller',
-	    views: ['home.Index'],
-
-	//actions
-	    index: function()
-	    {
-	        //TODO: index
-	    }
-	});
-	
-	Ext.define('AM.controller.Users', {
-	    extend: 'Ext.app.Controller',
-	    views: ['user.List', 'user.Edit'],
-	    stores: ['Users'],
-	    models: ['User'],
-
-	//actions
-	    list: function()
-	    {
-			//TODO: render list
-	    },
-
-	    edit: function(params)
-	    {
-			//TODO: render edit
-	    }
-	});
-
+    
+    Ext.application({
+        ...
+        
+        /*
+         * Here is where routes are defined.
+         *  key:    URL matcher
+         *  value:  controller + '#' + action to be invoked
+         */
+        routes: {
+            '/': 'home#index',
+            'users': 'users#list',
+            'users/:id/edit': 'users#edit'
+        }
+    });
+    
+4. Create your controllers and actions according to your routes;
+    
+    Ext.define('AM.controller.Home', {
+        extend: 'Ext.app.Controller',
+        views: ['home.Index'],
+    
+    //actions
+        index: function()
+        {
+            //TODO: index
+        }
+    });
+    
+    Ext.define('AM.controller.Users', {
+        extend: 'Ext.app.Controller',
+        views: ['user.List', 'user.Edit'],
+        stores: ['Users'],
+        models: ['User'],
+    
+    //actions
+        list: function()
+        {
+            //TODO: render list
+        },
+    
+        edit: function(params)
+        {
+            //TODO: render edit
+        }
+    });
+    
 == Notice
 
 Ext.ux.Router is a very lightweight utility and doesn\'t handle rendering process. It only parses URI Tokens and dispatch 
