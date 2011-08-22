@@ -9,8 +9,8 @@ to have a further understanding on what Ext MVC is.
 
 == Getting Started
 
-This distribuition already comes exemplified. You just have to get the code and open index.html to see it running.
-All code is very well documented and descompressed.
+This distribution already comes exemplified. You just have to get the code and open index.html to see it running.
+All code is very well documented and decompressed.
 
     git clone git@github.com:brunotavares/Ext.ux.Router.git
 
@@ -28,15 +28,14 @@ All code is very well documented and descompressed.
         ...
     });
     
-3. Setup routes, The follow the pattern "key:value" as "url matcher:controler#action". Parameters are prefixed by :, e.g. users/:id/edit.
-It is also possible to pass parameters as plain querystrings, e.g. "help/list?viewID=3&details=1";
+3. Setup routes, The follow the pattern "key:value" as "url match:controler#action". Parameters are prefixed by :, e.g. users/:id/edit. It is also possible to pass parameters as plain querystrings, e.g. "help/list?viewID=3&details=1";
     
     Ext.application({
         ...
         
         /*
          * Here is where routes are defined.
-         *  key:    URL matcher
+         *  key:    URL match
          *  value:  controller + '#' + action to be invoked
          */
         routes: {
@@ -79,8 +78,7 @@ It is also possible to pass parameters as plain querystrings, e.g. "help/list?vi
     
 == Notice
 
-Ext.ux.Router is a very lightweight utility and doesn\'t handle rendering process. It only parses URI Tokens and dispatch 
-controller\'s action. Rendering is a very specific task from each app, and would add some complexity in order to attend different scenarios. 
+Ext.ux.Router doesn\'t handle rendering process. It only parses URI Tokens and dispatch controller\'s action. Rendering is a very specific task from each app, and would add some complexity in order to attend different scenarios.
 
 This source code already comes with an suggestion on how to handle rendering, by overriding Ext.Controller and creating 
 a render() method
