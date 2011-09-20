@@ -218,7 +218,7 @@ Ext.define('Ext.ux.Router', (function()
          */
         findMatch: function(uri)
         {
-            var match, i, l, sectionRoute, sectionUri;
+            var match = false, i, l, sectionRoute, sectionUri;
                 
             if(Ext.isString(uri)){    
                 uri = pub.decomposeURI(uri);
