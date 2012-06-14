@@ -129,7 +129,11 @@ Ext.define('Ext.ux.Router', (function()
     
     pub = {
         singleton: true,
-        requires: ['Ext.util.History', 'Ext.form.field.Date'],
+        requires: [
+            'Ext.util.History', 
+            'Ext.form.field.Date',
+            'Ext.app.Application'
+        ],
         mixins: {
             observable: 'Ext.util.Observable'
         },
@@ -298,19 +302,19 @@ Ext.define('Ext.ux.Router', (function()
         'dispatch'
     );
     me.mixins.observable.constructor.call(me);
-});
-
-/*
- * Patch Ext.Application to auto-initialize Router
- */
-Ext.override(Ext.app.Application, {
-    enableRouter: true,
-    onBeforeLaunch: function() 
-    {
-        this.callOverridden();
+    
+    /*
+     * Patch Ext.Application to auto-initialize Router
+     */
+    Ext.override(Ext.app.Application, {
+        enableRouter: true,
+        onBeforeLaunch: function() 
+        {
+            this.callOverridden();
         
-        if(this.enableRouter){
-            Ext.ux.Router.init(this);
+            if(this.enableRouter){
+                Ext.ux.Router.init(this);
+            }
         }
-    }
+    });
 });
