@@ -321,7 +321,7 @@ Ext.define('Ext.ux.Router', {
         }
         //</debug>
         
-        controller[route.action].call(controller, params);
+        controller[route.action].call(controller, params, token, route);
         me.fireEvent('dispatch', token, route, params, controller);
         
         return true;

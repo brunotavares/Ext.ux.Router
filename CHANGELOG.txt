@@ -1,0 +1,17 @@
+22 Aug 2011 - version 1
+ - Initial commits.
+
+1 Nov 2012 - version 2
+ - Replace routing engine using javascript-route-matcher (https://github.com/cowboy/javascript-route-matcher). Much more flexible and reliable. It also adds route validation. 
+ 
+ - Bugs reported by users were fixed with new routing engine.
+
+ - Updating class definition to use singleton and better structure.
+ 
+ - Adjust compatibility with new Sencha Command.
+ 
+ - Create tests.
+ 
+ - New example 'Single Page'.
+ 
+ - Updated README, LICENSE and code documentation.

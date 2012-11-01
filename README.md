@@ -4,6 +4,8 @@ Lightweight JavaScript routing engine for [Ext JS 4 MVC](link:http://docs.sencha
 [javascript-route-matcher](https://github.com/cowboy/javascript-route-matcher) project.  It enables your application to monitor URL changes 
 and dispatch controllers actions based on defined routes. It also provides browser history navigation capabilities.
 
+Check the [CHANGELOG](https://raw.github.com/brunotavares/Ext.ux.Router/master/CHANGELOG.txt)
+
 ## Getting Started
 
     $ git clone git@github.com:brunotavares/Ext.ux.Router.git
@@ -11,8 +13,8 @@ and dispatch controllers actions based on defined routes. It also provides brows
 It comes with:
 
  * Router.js
- * 3 examples
- * Tests
+ * [Examples](https://github.com/brunotavares/Ext.ux.Router/tree/master/examples)
+ * [Tests](https://github.com/brunotavares/Ext.ux.Router/tree/master/test/index.html)
 
 ### Usage
 

@@ -19,6 +19,7 @@
  * After that run "sencha app refresh" to refresh the dependencies on bootstrap.js.
  * Ext.ux.Router will be added over there and you can simply use it.
  */
+
 Ext.application({
     name: 'SinglePage',
     autoCreateViewport: true,
