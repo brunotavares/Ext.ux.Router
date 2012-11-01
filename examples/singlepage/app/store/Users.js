@@ -1,4 +1,4 @@
-Ext.define('App.store.Users', {
+Ext.define('SinglePage.store.Users', {
     extend: 'Ext.data.Store',
     fields: ['name', 'email', 'phone'],
     data: [{

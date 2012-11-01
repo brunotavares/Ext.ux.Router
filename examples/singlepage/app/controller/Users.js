@@ -1,4 +1,4 @@
-Ext.define('App.controller.Users', {
+Ext.define('SinglePage.controller.Users', {
     extend: 'Ext.app.Controller',
    
     init: function() {

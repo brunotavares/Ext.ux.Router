@@ -1,5 +1,10 @@
-Ext.define('App.view.users.Edit', {
+Ext.define('SinglePage.view.users.Edit', {
     extend: 'Ext.form.Panel',
+    requires: [
+        'Ext.form.field.Text',
+        'Ext.Button'
+    ],
+    
     xtype: 'usersedit',
     bodyPadding: 20,
     buttonAlign: 'left',

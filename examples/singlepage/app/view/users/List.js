@@ -1,4 +1,4 @@
-Ext.define('App.view.users.List', {
+Ext.define('SinglePage.view.users.List', {
     extend: 'Ext.grid.Panel',
     xtype: 'userslist',
     store: 'Users',

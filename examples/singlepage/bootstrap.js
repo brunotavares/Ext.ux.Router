@@ -23,7 +23,6 @@ Ext.Loader.addClassPathMappings({
   "Ext.data.JsonPStore": "../ext/src/data/JsonPStore.js",
   "Ext.ux.ajax.Simlet": "../ext/src/ux/ajax/Simlet.js",
   "Ext.layout.component.field.TextArea": "../ext/src/layout/component/field/TextArea.js",
-  "App.view.Viewport": "app/view/Viewport.js",
   "Ext.layout.container.Container": "../ext/src/layout/container/Container.js",
   "Ext.util.Sortable": "../ext/src/util/Sortable.js",
   "Ext.selection.Model": "../ext/src/selection/Model.js",
@@ -39,7 +38,6 @@ Ext.Loader.addClassPathMappings({
   "Ext.form.field.File": "../ext/src/form/field/File.js",
   "Ext.ux.IFrame": "../ext/src/ux/IFrame.js",
   "Ext.slider.Single": "../ext/src/slider/Single.js",
-  "App.controller.Main": "app/controller/Main.js",
   "Ext.panel.Proxy": "../ext/src/panel/Proxy.js",
   "Ext.ComponentManager": "../ext/src/ComponentManager.js",
   "Ext.fx.target.Target": "../ext/src/fx/target/Target.js",
@@ -157,6 +155,7 @@ Ext.Loader.addClassPathMappings({
   "Ext.form.field.VTypes": "../ext/src/form/field/VTypes.js",
   "Ext.fx.PropertyHandler": "../ext/src/fx/PropertyHandler.js",
   "Ext.form.CheckboxGroup": "../ext/src/form/CheckboxGroup.js",
+  "Ext.ux.Router": "../../Router.js",
   "Ext.data.JsonP": "../ext/src/data/JsonP.js",
   "Ext.draw.engine.Vml": "../ext/src/draw/engine/Vml.js",
   "Ext.layout.container.CheckboxGroup": "../ext/src/layout/container/CheckboxGroup.js",
@@ -240,7 +239,6 @@ Ext.Loader.addClassPathMappings({
   "Ext.state.Manager": "../ext/src/state/Manager.js",
   "Ext.ux.grid.menu.ListMenu": "../ext/src/ux/grid/menu/ListMenu.js",
   "Ext.util.Inflector": "../ext/src/util/Inflector.js",
-  "App.view.Main": "app/view/Main.js",
   "Ext.grid.Panel": "../ext/src/grid/Panel.js",
   "Ext.XTemplate": "../ext/src/XTemplate.js",
   "Ext.data.NodeStore": "../ext/src/data/NodeStore.js",
@@ -454,7 +452,6 @@ Ext.Loader.addClassPathMappings({
   "Ext.ux.DataView.DragSelector": [],
   "Ext.ux.grid.menu.ListMenu": [],
   "Ext.ux.GMapPanel": [],
-  "App.view.Main": [],
   "Ext.ux.form.MultiSelect": [
     "Ext.ux.Multiselect"
   ],
@@ -478,17 +475,18 @@ Ext.Loader.addClassPathMappings({
   "Ext.ux.TabReorderer": [],
   "Ext.ux.grid.filter.NumericFilter": [],
   "Ext.ux.grid.menu.RangeMenu": [],
-  "App.view.Viewport": [],
   "Ext.ux.RowExpander": [],
   "Ext.ux.event.Recorder": [],
   "Ext.ux.event.Player": [],
+  "Ext.ux.Router": [
+    "Ext.Router"
+  ],
   "Ext.ux.ajax.SimManager": [],
   "Ext.ux.grid.filter.BooleanFilter": [],
   "Ext.ux.ToolbarDroppable": [],
   "Ext.ux.event.Maker": [],
   "Ext.ux.TabScrollerMenu": [],
   "Ext.ux.IFrame": [],
-  "App.controller.Main": [],
   "Ext.ux.DataView.Draggable": [],
   "Ext.ux.TabCloseMenu": [],
   "Ext.ux.form.SearchField": [],
@@ -523,7 +521,6 @@ Ext.Loader.addClassPathMappings({
   "Ext.ux.GMapPanel": [
     "widget.gmappanel"
   ],
-  "App.view.Main": [],
   "Ext.ux.form.MultiSelect": [
     "widget.multiselectfield",
     "widget.multiselect"
@@ -564,12 +561,12 @@ Ext.Loader.addClassPathMappings({
     "gridfilter.numeric"
   ],
   "Ext.ux.grid.menu.RangeMenu": [],
-  "App.view.Viewport": [],
   "Ext.ux.RowExpander": [
     "plugin.rowexpander"
   ],
   "Ext.ux.event.Recorder": [],
   "Ext.ux.event.Player": [],
+  "Ext.ux.Router": [],
   "Ext.ux.ajax.SimManager": [],
   "Ext.ux.grid.filter.BooleanFilter": [
     "gridfilter.boolean"
@@ -582,7 +579,6 @@ Ext.Loader.addClassPathMappings({
   "Ext.ux.IFrame": [
     "widget.uxiframe"
   ],
-  "App.controller.Main": [],
   "Ext.ux.DataView.Draggable": [],
   "Ext.ux.TabCloseMenu": [
     "plugin.tabclosemenu"

@@ -1,5 +1,13 @@
-Ext.define('App.view.settings.Index', {
+Ext.define('SinglePage.view.settings.Index', {
     extend: 'Ext.form.Panel',
+    requires: [
+        'Ext.form.FieldSet',
+        'Ext.form.field.Text',
+        'Ext.form.field.ComboBox',
+        'Ext.form.field.Date',
+        'Ext.Button'
+    ],
+    
     bodyPadding: 20,
     buttonAlign: 'left',
     autoScroll: true,

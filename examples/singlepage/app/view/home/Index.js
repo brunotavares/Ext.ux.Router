@@ -1,4 +1,4 @@
-Ext.define('App.view.home.Index', {
+Ext.define('SinglePage.view.home.Index', {
     extend: 'Ext.panel.Panel',
     border: false,
     styleHtmlContent: true,
@@ -21,7 +21,7 @@ Ext.define('App.view.home.Index', {
             ' "beforedispatch" and "dispatch";<br /><br /></li>',
             '<li>In this app most of the controller actions are empty. All the rendering process is automatically handled on',
             'the "dispatch" event (check app.js). This works because views are named after each controller and action. If',
-            'there\'s a controller "Users" with actions "edit" and "List", there\'ll be a view App.users.Edit and App.users.List.',
+            'there\'s a controller "Users" with actions "edit" and "List", there\'ll be a view SinglePage.users.Edit and SinglePage.users.List.',
             '<br /><br /><pre>index: function() {\n}</pre><br />',
             '<pre>',
                 'dispatch: function(token, match, params, controller) {\n',
@@ -35,7 +35,7 @@ Ext.define('App.view.home.Index', {
                 '    controller  = match.controller.charAt(0).toLowerCase() + match.controller.substr(1);\n',
                 '\n',
                 '    // try to get the view by controller + action names\n',
-                '    viewClass   = Ext.ClassManager.get(\'App.view.\' + controller + \'.\' + action);\n',
+                '    viewClass   = Ext.ClassManager.get(\'SinglePage.view.\' + controller + \'.\' + action);\n',
                 '\n',
                 '    if (viewClass) {\n',
                 '\n',

@@ -1,13 +1,26 @@
-// Let Ext know where Ext.ux.Router is
-Ext.Loader.setConfig({
-    enabled: true,
-    paths: {
-        'Ext.ux.Router': '../../Router.js'
-    }
-});
-
+/*
+ * == Old Sencha Command (v <= 2)
+ *
+ * You need to specify the path for Ext.ux.Router here using Ext.Loader.setConfig
+ *
+ * Ext.Loader.setConfig({
+ *     enabled: true,
+ *     paths: {
+ *         'Ext.ux.Router': '../../Router.js'
+ *     }
+ * });
+ *
+ * == New Sencha Command 3+
+ *  
+ * Add the path to your .sencha/app/sencha.cfg. Notice that .sencha folder is a hidden folder.
+ *
+ *      app.classpath=${app.dir}/app,${app.dir}/../../Router.js
+ *
+ * After that run "sencha app refresh" to refresh the dependencies on bootstrap.js.
+ * Ext.ux.Router will be added over there and you can simply use it.
+ */
 Ext.application({
-    name: 'App',
+    name: 'SinglePage',
     autoCreateViewport: true,
     
     requires: [
@@ -88,7 +101,7 @@ Ext.application({
                 controller  = match.controller.charAt(0).toLowerCase() + match.controller.substr(1);
     
                 // try to get the view by controller + action names
-                viewClass   = Ext.ClassManager.get('App.view.' + controller + '.' + action);
+                viewClass   = Ext.ClassManager.get('SinglePage.view.' + controller + '.' + action);
     
                 if (viewClass) {
         
