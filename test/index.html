@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+	<title>Test | Ext.ux.Router</title>
+	
+	<link rel="stylesheet" href="http://pivotal.github.com/jasmine/lib/jasmine.css"/>
+	
+	<script src="http://pivotal.github.com/jasmine/lib/jasmine.js"></script>
+	<script src="http://pivotal.github.com/jasmine/lib/jasmine-html.js"></script>
+	<script src="../examples/ext/ext-all-debug.js"></script>
+	<script src="../Router.js"></script>
+	
+	<script type="text/javascript">
+		
+		var app,
+			Router = Ext.ux.Router;
+				
+		// Helpers
+		// -------------------
+		
+		Ext.define('TestApp.controller.Users', {
+			extend: 'Ext.app.Controller',
+			index: Ext.emptyFn,
+			show: Ext.emptyFn,
+			showAll: Ext.emptyFn
+		});
+		
+		function initApp(routes) {
+			
+			app = Ext.create('Ext.app.Application',{
+				name: 'TestApp',
+				controllers: ['Users'],
+				routes: routes
+			});
+		}
+
+		
+		// Tests
+		// -------------------
+		
+		afterEach(function() {
+			app = null;
+			Ext.ux.Router.ready = false;
+			Ext.ux.Router.routes = [];
+			Ext.ux.Router.clearListeners();
+		});
+		
+		
+		describe("Route Matching", function() {
+				
+			describe("Basic Route 'users'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users': 'users#index'
+					});
+				});
+
+				it("shouldn't match 'fail'", function() {
+					expect(Router.parse('fail')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/'", function() {
+					expect(Router.parse('users/')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/foo'", function() {
+					expect(Router.parse('users/foo')).toBe(false);
+				});
+				
+				it("should match 'users'", function() {
+					expect(Router.parse('users')).toEqual({});
+				});
+				
+			});
+			
+			
+			describe("Basic index route ''", function() {
+				
+				beforeEach(function() {
+					initApp({
+						''			: 'users#index',
+						'users/:id'	: 'users#index'
+					});
+				});
+
+				it("should match '' with ''", function() {
+					expect(Router.parse('')).toEqual({});
+				});
+				
+				it("should match '/' with ''", function() {
+					expect(Router.parse('')).toEqual({});
+				});
+				
+				it("should skip first route '' and match 'users/1' with users/:id", function() {
+					expect(Router.parse('users/2')).toEqual({id: '2'});
+				});
+				
+				it("shouldn't match 'foo'", function() {
+					expect(Router.parse('foo')).toBe(false);
+				});
+			});
+			
+			
+			describe("Special index route '/'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'/'			: 'users#index',
+						'users/:id'	: 'users#index'
+					});
+				});
+
+				it("should match '' with '/'", function() {
+					expect(Router.parse('')).toEqual({});
+				});
+				
+				it("should match '/' with '/'", function() {
+					expect(Router.parse('/')).toEqual({});
+				});
+				
+				it("should skip first route '/' and match 'users/1' with users/:id", function() {
+					expect(Router.parse('users/2')).toEqual({id: '2'});
+				});
+				
+				it("shouldn't match 'foo'", function() {
+					expect(Router.parse('foo')).toBe(false);
+				});
+			});
+			
+			
+			describe("Regex Route /^(users?)(?:\\/(\\d+)(?:\\.\\.(\\d+))?)?/", function() {
+				
+				beforeEach(function() {
+					initApp({
+						"users": {
+							regex: /^(users?)(?:\/(\d+)(?:\.\.(\d+))?)?/,
+							controller: 'users',
+							action: 'index'
+						}
+					});
+				});
+
+				it("shouldn't match 'foo'", function() {
+					expect(Router.parse('foo')).toBe(false);
+				});
+				
+				it("should match 'user'", function() {
+					expect(Router.parse('user')).toEqual({captures: ['user', undefined, undefined]});
+				});
+				
+				it("should match 'users'", function() {
+					expect(Router.parse('users')).toEqual({captures: ['users', undefined, undefined]});
+				});
+				
+				it("should match 'user/123'", function() {
+					expect(Router.parse('user/123')).toEqual({captures: ['user', '123', undefined]});
+				});
+				
+				it("should match 'user/123..456'", function() {
+					expect(Router.parse('user/123..456')).toEqual({captures: ['user', '123', '456']});
+				});
+				
+			});
+			
+			
+			describe("Route with 1 variable 'users/:id'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id': 'users#show'
+					});
+				});
+
+				it("shouldn't match 'users'", function() {
+					expect(Router.parse('users')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/123/456'", function() {
+					expect(Router.parse('users/123/456')).toBe(false);
+				});
+
+				it("should match 'users/'", function() {
+					expect(Router.parse('users/')).toEqual({id: ''});
+				});
+				
+				it("should match 'users/123'", function() {
+					expect(Router.parse('users/123')).toEqual({id: '123'});
+				});
+
+			});
+			
+			
+			describe("Route with 2 variables 'users/:id/:login'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id/:login': 'users#show'
+					});
+				});
+
+				it("shouldn't match 'users'", function() {
+					expect(Router.parse('users')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/123'", function() {
+					expect(Router.parse('users/123')).toBe(false);
+				});
+
+				it("should match 'users/1/bruno'", function() {
+					expect(Router.parse('users/1/bruno')).toEqual({id: '1', login: 'bruno'});
+				});
+				
+			});
+			
+			
+			describe("Route with splat 'users/*names'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/*names': 'users#showAll'
+					});
+				});
+
+				it("shouldn't match 'users'", function() {
+					expect(Router.parse('users')).toBe(false);
+				});
+
+				it("should match 'users/'", function() {
+					expect(Router.parse('users/')).toEqual({names: ''});
+				});
+				
+				it("should match 'users/bruno'", function() {
+					expect(Router.parse('users/bruno')).toEqual({names: 'bruno'});
+				});
+				
+				it("should match 'users/bruno/juris/ryan/max'", function() {
+					expect(Router.parse('users/bruno/juris/ryan/max')).toEqual({names: 'bruno/juris/ryan/max'});
+				});
+				
+			});
+			
+			
+			describe("Route with 2 splats 'users/*ids/*names'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/*ids/*names': 'users#showAll'
+					});
+				});
+
+				it("shouldn't match 'users'", function() {
+					expect(Router.parse('users')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/123'", function() {
+					expect(Router.parse('users/123')).toBe(false);
+				});
+
+				it("should match 'users/123/'", function() {
+					expect(Router.parse('users/123/')).toEqual({ids: '123', names: ''});
+				});
+				
+				it("should match 'users//bruno'", function() {
+					expect(Router.parse('users//bruno')).toEqual({ids: '', names: 'bruno'});
+				});
+				
+				it("should match 'users//'", function() {
+					expect(Router.parse('users//')).toEqual({ids: '', names: ''});
+				});
+				
+				it("should match 'users///bruno'", function() {
+					expect(Router.parse('users///bruno')).toEqual({ids: '/', names: 'bruno'});
+				});
+				
+				it("should match 'users/1/bruno'", function() {
+					expect(Router.parse('users/1/bruno')).toEqual({ids: '1', names: 'bruno'});
+				});
+				
+				it("should match 'users/1,2,3/bruno,max,juris'", function() {
+					expect(Router.parse('users/1,2,3/bruno,max,juris')).toEqual({ids: '1,2,3', names: 'bruno,max,juris'});
+				});
+				
+			});
+			
+			
+			describe("Route with 2 variables and 2 splats 'users/:id/*roles/:name/*groups'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id/*roles/:name/*groups': 'users#show'
+					});
+				});
+
+				it("should match 'users/1/admin,user/bruno/services,engineering'", function() {
+					expect(Router.parse('users/1/admin,user/bruno/services,engineering')).toEqual({
+						id: '1',
+						roles: 'admin,user',
+						name: 'bruno',
+						groups: 'services,engineering'
+					});
+				});
+				
+			});
+			
+			
+			describe("Route with 2 variables and 2 splats 'users/:id/:name/*roles/*groups'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id/:name/*roles/*groups': 'users#show'
+					});
+				});
+
+				it("should match 'users/1/bruno/admin,user/services,engineering'", function() {
+					expect(Router.parse('users/1/bruno/admin,user/services,engineering')).toEqual({
+						id: '1',
+						name: 'bruno',
+						roles: 'admin,user',
+						groups: 'services,engineering'
+					});
+				});
+				
+			});
+			
+			
+			describe("Route for paging 'search/:query/p:page'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'search/:query/p:page': 'users#index'
+					});
+				});
+
+				it("should match 'search/boston/p20'", function() {
+					expect(Router.parse('search/boston/p20')).toEqual({
+						query: "boston",
+						page: "20"
+					});
+				});
+				
+			});
+			
+			
+			describe("Route complex '*first/complex-:part/*rest'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'*first/complex-:part/*rest': 'users#index'
+					});
+				});
+
+				it("should match '1/2/3/complex-part/four/five/six/seven'", function() {
+					expect(Router.parse('1/2/3/complex-part/four/five/six/seven')).toEqual({
+						first: "1/2/3",
+						part: "part",
+						rest: "four/five/six/seven"
+					});
+				});
+				
+			});
+			
+			
+			describe("Route with args ':entity?*args'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						':entity?*args': 'users#index'
+					});
+				});
+
+				it("should match 'cowboy?a=b&c=d'", function() {
+					expect(Router.parse('cowboy?a=b&c=d')).toEqual({
+						entity: "cowboy",
+						args: "a=b&c=d"
+					});
+				});
+				
+			});
+			
+			
+			describe("Route anything '*anything'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'*anything': 'users#index'
+					});
+				});
+
+				it("should match 'any-route'", function() {
+					expect(Router.parse('any-route')).toEqual({
+						anything: "any-route"
+					});
+				});
+				
+			});
+			
+			
+			describe("Route 'users/:id' with digit only regex validator", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id': {
+							controller: 'users',
+							action: 'show',
+							id: /^\d+$/
+						}
+					});
+				});
+
+				it("shouldn't match 'users'", function() {
+					expect(Router.parse('users')).toBe(false);
+				});
+
+				it("shouldn't match 'users/'", function() {
+					expect(Router.parse('users/')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/abc'", function() {
+					expect(Router.parse('users/abc')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/123.456'", function() {
+					expect(Router.parse('users/123.456')).toBe(false);
+				});
+				
+				it("should match 'users/123'", function() {
+					expect(Router.parse('users/123')).toEqual({
+						id: "123"
+					});
+				});
+				
+			});
+			
+			
+			describe("Route 'users/:id' with digit only function validator", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id': {
+							controller: 'users',
+							action: 'show',
+							id: function(value) {
+								return value.match(/^\d+$/);
+							}
+						}
+					});
+				});
+
+				it("shouldn't match 'users'", function() {
+					expect(Router.parse('users')).toBe(false);
+				});
+
+				it("shouldn't match 'users/'", function() {
+					expect(Router.parse('users/')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/abc'", function() {
+					expect(Router.parse('users/abc')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/123.456'", function() {
+					expect(Router.parse('users/123.456')).toBe(false);
+				});
+				
+				it("should match 'users/123'", function() {
+					expect(Router.parse('users/123')).toEqual({
+						id: "123"
+					});
+				});
+				
+			});
+			
+
+			describe("Route 'users/:id' with specific id:456 validator", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id': {
+							controller: 'users',
+							action: 'show',
+							id: '456'
+						}
+					});
+				});
+
+				it("shouldn't match 'users/123'", function() {
+					expect(Router.parse('users/123')).toBe(false);
+				});
+
+				it("should match 'users/456'", function() {
+					expect(Router.parse('users/456')).toEqual({
+						id: "456"
+					});
+				});
+				
+			});
+			
+			
+			describe("Route 'users/:id/:index' with 2 validators", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id/:index': {
+							controller: 'users',
+							action: 'show',
+							id: /^\d+$/,
+							index: function(value) {
+								return value.match(/^\d+$/);
+							}
+						}
+					});
+				});
+				
+				it("shouldn't match 'users/abc/def'", function() {
+					expect(Router.parse('users/abc/def')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/abc/123'", function() {
+					expect(Router.parse('users/abc/123')).toBe(false);
+				});
+				
+				it("shouldn't match 'users/123/abc'", function() {
+					expect(Router.parse('users/123/abc')).toBe(false);
+				});
+				
+				it("should match 'users/123/456'", function() {
+					expect(Router.parse('users/123/456')).toEqual({
+						id: "123",
+						index: "456"
+					});
+				});
+				
+			});
+			
+		});
+		
+		
+		describe("Route Events", function() {
+			
+			describe("Route 'users/:id'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id': 'users#show'
+					});
+				});
+				
+				it("should trigger 'routemissed' with route 'users'", function() {
+					var triggered = false;
+					
+					Router.on('routemissed', function() {
+						triggered = true;
+					});
+					Router.parse('users');
+					
+					expect(triggered).toBe(true);
+				});
+				
+				it("shouldn't trigger 'routemissed' with route 'users/1'", function() {
+					var triggered = false;
+					
+					Router.on('routemissed', function() {
+						triggered = true;
+					});
+					Router.parse('users/1');
+					
+					expect(triggered).toBe(false);
+				});
+				
+				it("shouldn't trigger 'beforedispatch' with route 'users'", function() {
+					var triggered = false;
+					
+					Router.on('beforedispatch', function() {
+						triggered = true;
+					});
+					Router.parse('users');
+					
+					expect(triggered).toBe(false);
+				});
+				
+				it("should trigger 'beforedispatch' with route 'users/1'", function() {
+					var triggered = false;
+					
+					Router.on('beforedispatch', function() {
+						triggered = true;
+					});
+
+					Router.parse('users/1');
+					
+					expect(triggered).toBe(true);
+				});
+				
+				it("shouldn't trigger 'dispatch' with route 'users'", function() {
+					var triggered = false;
+					
+					Router.on('dispatch', function() {
+						triggered = true;
+					});
+					Router.parse('users');
+					
+					expect(triggered).toBe(false);
+				});
+				
+				it("should trigger 'dispatch' with route 'users/1'", function() {
+					var triggered = false;
+					
+					Router.on('dispatch', function() {
+						triggered = true;
+					});
+					Router.parse('users/1');
+					
+					expect(triggered).toBe(true);
+				});
+				
+			});
+			
+			describe("Routes 'users/:id' and 'users/:base'", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:id'		: 'users#index',
+						'users/:action'	: 'users#show'
+					});
+				});
+				
+				it("should skip to next route when 'beforedispatch' returns false", function() {
+					
+					Router.on('beforedispatch', function(token, route) {
+						if (route.route === 'users/:id') {
+							return false;
+						}
+					});
+					
+					Router.on('dispatch', function(token, route, params) {
+						
+						expect(route.route).toBe('users/:action');
+						expect(params.action).toBe('delete');
+						
+					});
+					
+					Router.parse('users/delete');
+				});
+				
+			});
+		});
+
+
+		describe("Controller Dispatch", function() {
+			var args;
+			
+			beforeEach(function() {
+				args = [];
+					
+				Ext.define('TestApp.controller.Users', {
+					extend: 'Ext.app.Controller',
+					index: function() {
+						args = Ext.Array.from(arguments);
+					}
+				});
+			});
+			
+			it("should dispatch route 'users/:id' with 'users/1", function() {
+				initApp({
+					'users/:id': 'users#index'
+				});
+				
+				Router.parse('users/1');
+				
+				expect(args[0]).not.toBe(undefined);
+				
+				if (args[0]) {
+					expect(args[0].id).toEqual('1');
+				}
+			});
+			
+		});
+		
+		
+		// Jasmine
+		// -------------------
+		
+		(function() {
+			var jasmineEnv = jasmine.getEnv();
+			jasmineEnv.updateInterval = 250;
+
+			var htmlReporter = new jasmine.HtmlReporter();
+			jasmineEnv.addReporter(htmlReporter);
+
+			jasmineEnv.specFilter = function(spec) {
+				return htmlReporter.specFilter(spec);
+			};
+
+			var currentWindowOnload = window.onload;
+			window.onload = function() {
+				if (currentWindowOnload) {
+					currentWindowOnload();
+				}
+
+				execJasmine();
+			};
+
+			function execJasmine() {
+				jasmineEnv.execute();
+			}
+		})();
+
+	</script>
+</head>
+<body>
+</body>
+</html>
