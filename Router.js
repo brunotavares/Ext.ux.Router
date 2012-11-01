@@ -1,4 +1,12 @@
-/**
+/*!
+ * Ext.ux.Router
+ * http://github.com/brunotavares/Ext.ux.Router
+ *
+ * Copyright 2012 Bruno Tavares
+ * Released under the MIT license
+ * Check MIT-LICENSE.txt
+ */
+ /*
  * @class Ext.ux.Router
  * @extend Ext.app.Controller
  * 

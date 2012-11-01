@@ -15,6 +15,10 @@ Ext.application({
         'Ext.window.MessageBox'
     ],
     
+    stores: [
+        'Users'
+    ],
+    
     controllers: [
         'Home',
         'Settings',
@@ -47,6 +51,7 @@ Ext.application({
         'users/:id/edit': 'users#edit'
     },
     
+    
     launch: function() {
         /* 
          * Ext.ux.Router provides some events for better controlling
@@ -77,23 +82,25 @@ Ext.application({
                     viewport    = Ext.getCmp('viewport'),
                     target      = viewport.down('#viewport-target'),
                     navToolbar  = viewport.down('#main-nav-toolbar');
-                    
+        
                 // adjust controller and action names    
                 action      = Ext.String.capitalize(match.action);
                 controller  = match.controller.charAt(0).toLowerCase() + match.controller.substr(1);
-                
+    
                 // try to get the view by controller + action names
                 viewClass   = Ext.ClassManager.get('App.view.' + controller + '.' + action);
-                
+    
                 if (viewClass) {
-                    
+        
                     // create view
-                    view = Ext.create(viewClass);
-                    
+                    view = Ext.create(viewClass, {
+                        border: false
+                    });
+        
                     // clear target and add new view
                     target.removeAll();
                     target.add(view);
-                    
+        
                     // adjust top toolbar
                     if (navToolbar.child('#' + controller)) {
                         navToolbar.child('#' + controller).toggle(true);

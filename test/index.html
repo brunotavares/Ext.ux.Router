@@ -49,41 +49,6 @@
 		
 		describe("Route Matching", function() {
 				
-			describe("Regex Route /^(users?)(?:\\/(\\d+)(?:\\.\\.(\\d+))?)?/", function() {
-				
-				beforeEach(function() {
-					initApp({
-						"users": {
-							regex: /^(users?)(?:\/(\d+)(?:\.\.(\d+))?)?/,
-							controller: 'users',
-							action: 'index'
-						}
-					});
-				});
-
-				it("shouldn't match 'foo'", function() {
-					expect(Router.parse('foo')).toBe(false);
-				});
-				
-				it("should match 'user'", function() {
-					expect(Router.parse('user')).toEqual({captures: ['user', undefined, undefined]});
-				});
-				
-				it("should match 'users'", function() {
-					expect(Router.parse('users')).toEqual({captures: ['users', undefined, undefined]});
-				});
-				
-				it("should match 'user/123'", function() {
-					expect(Router.parse('user/123')).toEqual({captures: ['user', '123', undefined]});
-				});
-				
-				it("should match 'user/123..456'", function() {
-					expect(Router.parse('user/123..456')).toEqual({captures: ['user', '123', '456']});
-				});
-				
-			});
-			
-			
 			describe("Basic Route 'users'", function() {
 				
 				beforeEach(function() {
@@ -162,6 +127,41 @@
 				it("shouldn't match 'foo'", function() {
 					expect(Router.parse('foo')).toBe(false);
 				});
+			});
+			
+			
+			describe("Regex Route /^(users?)(?:\\/(\\d+)(?:\\.\\.(\\d+))?)?/", function() {
+				
+				beforeEach(function() {
+					initApp({
+						"users": {
+							regex: /^(users?)(?:\/(\d+)(?:\.\.(\d+))?)?/,
+							controller: 'users',
+							action: 'index'
+						}
+					});
+				});
+
+				it("shouldn't match 'foo'", function() {
+					expect(Router.parse('foo')).toBe(false);
+				});
+				
+				it("should match 'user'", function() {
+					expect(Router.parse('user')).toEqual({captures: ['user', undefined, undefined]});
+				});
+				
+				it("should match 'users'", function() {
+					expect(Router.parse('users')).toEqual({captures: ['users', undefined, undefined]});
+				});
+				
+				it("should match 'user/123'", function() {
+					expect(Router.parse('user/123')).toEqual({captures: ['user', '123', undefined]});
+				});
+				
+				it("should match 'user/123..456'", function() {
+					expect(Router.parse('user/123..456')).toEqual({captures: ['user', '123', '456']});
+				});
+				
 			});
 			
 			
