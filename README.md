@@ -20,18 +20,27 @@ It comes with:
 
 1. Copy Router.js to your application. Folder suggested {root}/lib/Router.js;
 
-2. Configure Ext.Loader path:
+    a. If you use the old Sencha Command v2, configure Ext.Loader path:
 
+            Ext.Loader.setConfig({
+                enabled: true,
+                paths: {
+                    'Ext.ux.Router': 'lib/Router.js'
+                }
+            });
 
-        Ext.Loader.setConfig({
-            enabled: true,
-            paths: {
-                'Ext.ux.Router': 'lib/Router.js'
-            }
-        });
+    b. If you use the new Sencha Command v3+, open .sencha/app/sencha.cfg and add the dependency to your path:
 
+            app.classpath=${app.dir}/app,${app.dir}/../../Router.js
+            
+        
+    After that, run "sencha app refresh" on your terminal. Sencha CMD will read all dependencies and update    
+    the bootstrap.js file.
+        
+    Check my example [Single Page](http://github.com/brunotavares/Ext.ux.Router/tree/master/examples/singlepage) 
+    for more details.<br /><br />
 
-3. Add the class requirement to your application start and setup routes (see below the Route Format):
+2. Add the class requirement to your application start and setup routes (see below the Route Format):
 
         Ext.application({
             name: 'App',
@@ -55,7 +64,7 @@ It comes with:
             }
         });
     
-5. Create your controllers and actions according to your routes;
+3. Create your controllers and actions according to your routes;
 
         Ext.define('App.controller.Home', {
             extend: 'Ext.app.Controller',
