@@ -66,18 +66,26 @@ Ext.define('Ext.ux.Router', {
         me.routes = [];
         me.mixins.observable.constructor.call(me);
     },
-
+    
     /**
-     * Initializes Ext.History and processes the first token (generaly home, main, index, etc).
+     * Processes the routes for the given app and initializes Ext.History. Also parses
+     * the initial token, generally main, home, index, etc.
      * @private
      */
     init: function(app) {
         var me = this,
             history = Ext.History;
         
+        if (!app || !app.routes) {
+            return;
+        }
+        
+        me.processRoutes(app);
+            
         if (me.ready) {
             return;
         }
+        me.ready = true;
         
         me.addEvents(
             /**
@@ -108,10 +116,6 @@ Ext.define('Ext.ux.Router', {
             'dispatch'
         );
         
-        me.app = app;
-        me.ready = true;
-        me.processRoutes();
-        
         history.init();
 		history.on('change', me.parse, me);
 		
@@ -124,19 +128,13 @@ Ext.define('Ext.ux.Router', {
      * Convert routes string definied in Ext.Application into structures objects.
      * @private
      */
-    processRoutes: function() {
+    processRoutes: function(app) {
         var key,
-            appRoutes = this.app.routes;
-        
-        //<debug warn>
-        if (!appRoutes && Ext.isDefined(Ext.global.console)) {
-            Ext.global.console.warn("[Ext.ux.Router] No routes were found. Consider defining routes object in your Ext.application definition.");
-        }
-        //</debug>
+            appRoutes = app.routes;
         
         for (key in appRoutes) {
             if (appRoutes.hasOwnProperty(key)) {
-                this.routeMatcher(key, appRoutes[key]);
+                this.routeMatcher(app, key, appRoutes[key]);
             }
         }
     },
@@ -146,7 +144,7 @@ Ext.define('Ext.ux.Router', {
      * {@link https://github.com/cowboy/javascript-route-matcher javascript-route-matcher}
      * @private
      */ 
-    routeMatcher: function(route, rules) {
+    routeMatcher: function(app, route, rules) {
         var routeObj, action,
             me      = this,
             routes  = me.routes,
@@ -157,6 +155,7 @@ Ext.define('Ext.ux.Router', {
         
         if (rules.regex) {
             routeObj = {
+                app         : app,
                 route       : route,
                 regex       : rules.regex,
                 controller  : Ext.String.capitalize(rules.controller),
@@ -175,6 +174,7 @@ Ext.define('Ext.ux.Router', {
             });
             
             routeObj = {
+                app     : app,
                 route   : route,
                 names   : names,
                 matcher : new RegExp("^" + reRoute + "$")
@@ -188,7 +188,6 @@ Ext.define('Ext.ux.Router', {
                 routeObj.rules      = undefined;
             }
             else {
-                
                 routeObj.controller = Ext.String.capitalize(rules.controller);
                 routeObj.action     = rules.action;
                 
@@ -305,7 +304,7 @@ Ext.define('Ext.ux.Router', {
         }
 
         //<debug error>
-        controller = me.app.getModuleClassName(route.controller, 'controller');
+        controller = route.app.getModuleClassName(route.controller, 'controller');
         controller = Ext.ClassManager.get(controller);
         
         if (!controller && Ext.isDefined(Ext.global.console)) {
@@ -313,7 +312,7 @@ Ext.define('Ext.ux.Router', {
         }
         //</debug>
         
-        controller = me.app.getController(route.controller);
+        controller = route.app.getController(route.controller);
         
         //<debug error>
         if (!controller[route.action] && Ext.isDefined(Ext.global.console)) {

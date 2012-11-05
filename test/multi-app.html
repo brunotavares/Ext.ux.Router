@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+	<title>Test Multi-App | Ext.ux.Router</title>
+	
+	<link rel="stylesheet" href="http://pivotal.github.com/jasmine/lib/jasmine.css"/>
+	
+	<script src="http://pivotal.github.com/jasmine/lib/jasmine.js"></script>
+	<script src="http://pivotal.github.com/jasmine/lib/jasmine-html.js"></script>
+	<script src="../examples/ext/ext-all-debug.js"></script>
+	<script src="../Router.js"></script>
+	
+	<script type="text/javascript">
+		
+		var actionArgs,
+			Router = Ext.ux.Router;
+		
+		// Override EventBus to make multi app structure possible.
+		// Ext might support this on the future.
+		// -------------------
+		
+        var eventBusInstance,
+            eventBusClass = Ext.app.EventBus;
+            
+        Ext.app.EventBus = function() {
+            if (!eventBusInstance) {
+                eventBusInstance = new eventBusClass();
+            }
+            
+            return eventBusInstance;
+        };
+
+
+		// Helpers
+		// -------------------
+		
+		function createApps(finalLaunch) {
+			
+			var appsLaunched = 0;
+			
+			function launch() {
+				appsLaunched++;
+				if (appsLaunched===3) {
+					finalLaunch();
+				}
+			}
+			
+			Ext.define('App1.controller.Main', {
+				extend: 'Ext.app.Controller',
+				index: function() {
+					actionArgs = Ext.Array.from(arguments);
+				}
+			});
+		
+			Ext.application({
+				name: 'App1',
+				controllers: ['Main'],
+				launch: launch,
+				routes: {
+					'/'		: 'main#index',
+					'app1'	: 'main#index'
+				}
+			});
+		
+		
+			Ext.define('App2.controller.Main', {
+				extend: 'Ext.app.Controller',
+				index: function() {
+					actionArgs = Ext.Array.from(arguments);
+				}
+			});
+		
+			Ext.application({
+				name: 'App2',
+				controllers: ['Main'],
+				launch: launch,
+				routes: {
+					'app2'	: 'main#index'
+				}
+			});
+		
+		
+			Ext.define('App3.controller.Main', {
+				extend: 'Ext.app.Controller',
+				index: function() {
+					actionArgs = Ext.Array.from(arguments);
+				}
+			});
+		
+			Ext.application({
+				name: 'App3',
+				controllers: ['Main'],
+				launch: launch,
+				routes: {
+					'app3': 'main#index'
+				}
+			});
+		};
+
+		function initApps() {
+			actionArgs = null;
+			Ext.ux.Router.init(App1.app);
+			Ext.ux.Router.init(App2.app);
+			Ext.ux.Router.init(App3.app);
+		}
+		
+		
+		// Tests
+		// -------------------
+		
+		describe("Supports multiple applications", function() {
+			
+			beforeEach(function() {
+				actionArgs = null;
+				
+				Router.ready = false;
+				Router.routes = [];
+				Router.apps = [];
+				Router.clearListeners();
+			});
+			
+			
+			it("should dispatch '/' to App1.controller.Main#index", function() {
+				initApps();
+				Router.parse('/');
+				
+				expect(actionArgs).toBeTruthy();
+				
+				if (actionArgs) {
+					expect(actionArgs[2]).toBeTruthy();
+				
+					if (actionArgs[2]) {
+						expect(actionArgs[2].action).toBe('index');
+						expect(actionArgs[2].controller).toBe('Main');
+						expect(actionArgs[2].app).toBeTruthy();
+						
+						if (actionArgs[2].app) {
+							expect(actionArgs[2].app.name).toBe('App1');
+						}
+					}
+				}
+			});
+			
+			it("should dispatch 'app2' to App2.controller.Main#index", function() {
+				initApps();
+				Router.parse('app2');
+				
+				expect(actionArgs).toBeTruthy();
+				
+				if (actionArgs) {
+					expect(actionArgs[2]).toBeTruthy();
+				
+					if (actionArgs[2]) {
+						expect(actionArgs[2].action).toBe('index');
+						expect(actionArgs[2].controller).toBe('Main');
+						expect(actionArgs[2].app).toBeTruthy();
+						
+						if (actionArgs[2].app) {
+							expect(actionArgs[2].app.name).toBe('App2');
+						}
+					}
+				}
+			});
+			
+			it("should dispatch 'app3' to App3.controller.Main#index", function() {
+				initApps();
+				Router.parse('app3');
+				
+				expect(actionArgs).toBeTruthy();
+				
+				if (actionArgs) {
+					expect(actionArgs[2]).toBeTruthy();
+				
+					if (actionArgs[2]) {
+						expect(actionArgs[2].action).toBe('index');
+						expect(actionArgs[2].controller).toBe('Main');
+						expect(actionArgs[2].app).toBeTruthy();
+						
+						if (actionArgs[2].app) {
+							expect(actionArgs[2].app.name).toBe('App3');
+						}
+					}
+				}
+			});
+			
+		});
+		
+		
+		// Jasmine
+		// -------------------
+		
+		(function() {
+			var jasmineEnv = jasmine.getEnv();
+			jasmineEnv.updateInterval = 250;
+
+			var htmlReporter = new jasmine.HtmlReporter();
+			jasmineEnv.addReporter(htmlReporter);
+
+			jasmineEnv.specFilter = function(spec) {
+				return htmlReporter.specFilter(spec);
+			};
+
+			var currentWindowOnload = window.onload;
+			window.onload = function() {
+				if (currentWindowOnload) {
+					currentWindowOnload();
+				}
+				
+				
+				createApps(function() {
+					execJasmine();
+				});
+			};
+
+			function execJasmine() {
+				jasmineEnv.execute();
+			}
+		})();
+
+	</script>
+</head>
+<body>
+</body>
+</html>
