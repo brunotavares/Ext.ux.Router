@@ -15,7 +15,7 @@
 		
 		var app,
 			Router = Ext.ux.Router;
-				
+		
 		// Helpers
 		// -------------------
 		
@@ -25,12 +25,21 @@
 			show: Ext.emptyFn,
 			showAll: Ext.emptyFn
 		});
-		
+
+		Ext.define('TestApp.controller.subfolder.Users', {
+			extend: 'Ext.app.Controller',
+			show: Ext.emptyFn,
+			hide: Ext.emptyFn,
+		});
+
 		function initApp(routes) {
 			
 			app = Ext.create('Ext.app.Application',{
 				name: 'TestApp',
-				controllers: ['Users'],
+				controllers: [
+					'Users',
+					'subfolder.Users'
+				],
 				routes: routes
 			});
 		}
@@ -53,7 +62,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users': 'users#index'
+						'users': 'Users#index'
 					});
 				});
 
@@ -80,8 +89,8 @@
 				
 				beforeEach(function() {
 					initApp({
-						''			: 'users#index',
-						'users/:id'	: 'users#index'
+						''			: 'Users#index',
+						'users/:id'	: 'Users#index'
 					});
 				});
 
@@ -107,8 +116,8 @@
 				
 				beforeEach(function() {
 					initApp({
-						'/'			: 'users#index',
-						'users/:id'	: 'users#index'
+						'/'			: 'Users#index',
+						'users/:id'	: 'Users#index'
 					});
 				});
 
@@ -136,7 +145,7 @@
 					initApp({
 						"users": {
 							regex: /^(users?)(?:\/(\d+)(?:\.\.(\d+))?)?/,
-							controller: 'users',
+							controller: 'Users',
 							action: 'index'
 						}
 					});
@@ -169,7 +178,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id': 'users#show'
+						'users/:id': 'Users#show'
 					});
 				});
 
@@ -196,7 +205,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id/:login': 'users#show'
+						'users/:id/:login': 'Users#show'
 					});
 				});
 
@@ -219,7 +228,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/*names': 'users#showAll'
+						'users/*names': 'Users#showAll'
 					});
 				});
 
@@ -246,7 +255,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/*ids/*names': 'users#showAll'
+						'users/*ids/*names': 'Users#showAll'
 					});
 				});
 
@@ -289,7 +298,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id/*roles/:name/*groups': 'users#show'
+						'users/:id/*roles/:name/*groups': 'Users#show'
 					});
 				});
 
@@ -309,7 +318,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id/:name/*roles/*groups': 'users#show'
+						'users/:id/:name/*roles/*groups': 'Users#show'
 					});
 				});
 
@@ -329,7 +338,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'search/:query/p:page': 'users#index'
+						'search/:query/p:page': 'Users#index'
 					});
 				});
 
@@ -347,7 +356,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'*first/complex-:part/*rest': 'users#index'
+						'*first/complex-:part/*rest': 'Users#index'
 					});
 				});
 
@@ -366,7 +375,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						':entity?*args': 'users#index'
+						':entity?*args': 'Users#index'
 					});
 				});
 
@@ -384,7 +393,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'*anything': 'users#index'
+						'*anything': 'Users#index'
 					});
 				});
 
@@ -402,7 +411,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: /^\d+$/
 						}
@@ -439,7 +448,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: function(value) {
 								return value.match(/^\d+$/);
@@ -478,7 +487,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: '456'
 						}
@@ -503,7 +512,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id/:index': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: /^\d+$/,
 							index: function(value) {
@@ -533,6 +542,27 @@
 				});
 				
 			});
+
+			describe("Routes with namespaced controllers", function() {
+
+				beforeEach(function() {
+					initApp({
+						'users/show/:id': 'subfolder.users#show',
+						'users/hide/:id': 'subfolder.Users#hide'
+					});
+				});
+
+				it("shouldn't match bad cased controller 'users/show/123'", function() {
+					expect(Router.parse('users/show/123')).toBe(false);
+				});
+
+				it("should match lowercase controller 'users/hide/123'", function() {
+					expect(Router.parse('users/hide/123')).toEqual({
+						id: "123"
+					});
+				});
+
+			});
 			
 		});
 		
@@ -543,7 +573,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id': 'users#show'
+						'users/:id': 'Users#show'
 					});
 				});
 				
@@ -620,8 +650,8 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id'		: 'users#index',
-						'users/:action'	: 'users#show'
+						'users/:id'		: 'Users#index',
+						'users/:action'	: 'Users#show'
 					});
 				});
 				
@@ -663,7 +693,7 @@
 			
 			it("should dispatch route 'users/:id' with 'users/1", function() {
 				initApp({
-					'users/:id': 'users#index'
+					'users/:id': 'Users#index'
 				});
 				
 				Router.parse('users/1');
