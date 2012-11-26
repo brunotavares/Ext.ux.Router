@@ -297,23 +297,17 @@ Ext.define('Ext.ux.Router', {
      */    
     dispatch: function(token, route, params) {
         var controller,
-            me      = this;
+            me = this;
         
         if (me.fireEvent('beforedispatch', token, route, params) === false) {
             return false;
         }
-
-        //<debug error>
-        controller = route.app.getModuleClassName(route.controller, 'controller');
-        controller = Ext.ClassManager.get(controller);
         
-        if (!controller && Ext.isDefined(Ext.global.console)) {
-            Ext.global.console.error("[Ext.ux.Router] Controller not found ", route.controller);
+        controller = me.getController(route);
+        
+        if (!controller) {
             return false;
         }
-        //</debug>
-        
-        controller = route.app.getController(route.controller);
         
         //<debug error>
         if (!controller[route.action] && Ext.isDefined(Ext.global.console)) {
@@ -344,6 +338,40 @@ Ext.define('Ext.ux.Router', {
         else {
             history.add(token);
         }
+    },
+    
+    /**
+     * Utility method that receives a route and returns the  controller instance. 
+     * Controller name could be either the regular name (e.g. UserSettings), a 
+     * string to be capitalized (e.g. userSettings -> UserSettings) or even separated
+     * by namespace  (e.g. user.Settings).
+     */
+    getController: function(route) {
+        var controllerName,
+            app     = route.app,
+            classMgr= Ext.ClassManager;
+
+        // try regular name
+        controllerName = app.getModuleClassName(route.controller, 'controller');
+        
+        if (!classMgr.get(controllerName)) {
+            
+            // try capitalized
+            controllerName = app.getModuleClassName(Ext.String.capitalize(route.controller), 'controller');
+            
+            if (!classMgr.get(controllerName)) {
+                
+                //<debug>
+                if (Ext.isDefined(Ext.global.console)) {
+                    Ext.global.console.warn("[Ext.ux.Router] Controller not found ", route.controller);
+                }
+                //</debug>
+                
+                return false;
+            }
+        }
+        
+        return app.getController(controllerName);
     }
 },
 function() {

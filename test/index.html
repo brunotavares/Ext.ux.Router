@@ -15,7 +15,7 @@
 		
 		var app,
 			Router = Ext.ux.Router;
-				
+		
 		// Helpers
 		// -------------------
 		
@@ -543,12 +543,12 @@
 				
 			});
 
-			describe("Routes with non-capitalized classes", function() {
+			describe("Routes with namespaced controllers", function() {
 
 				beforeEach(function() {
 					initApp({
-						'users/show/:id'	: 'subfolder.users#show',
-						'users/hide/:id'	: 'subfolder.Users#hide'
+						'users/show/:id': 'subfolder.users#show',
+						'users/hide/:id': 'subfolder.Users#hide'
 					});
 				});
 
