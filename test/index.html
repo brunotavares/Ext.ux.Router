@@ -98,8 +98,8 @@
 					expect(Router.parse('')).toEqual({});
 				});
 				
-				it("should match '/' with ''", function() {
-					expect(Router.parse('')).toEqual({});
+				it("should match '' with '/'", function() {
+					expect(Router.parse('/')).toEqual({});
 				});
 				
 				it("should skip first route '' and match 'users/1' with users/:id", function() {
@@ -127,6 +127,14 @@
 				
 				it("should match '/' with '/'", function() {
 					expect(Router.parse('/')).toEqual({});
+				});
+				
+				it("should parse arguments from route '' with '?id=1'", function() {
+					expect(Router.parse('?id=1')).toEqual({id: '1'});
+				});
+				
+				it("should parse arguments from route '' with '/?id=1'", function() {
+					expect(Router.parse('/?id=1')).toEqual({id: '1'});
 				});
 				
 				it("should skip first route '/' and match 'users/1' with users/:id", function() {

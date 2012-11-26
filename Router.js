@@ -245,7 +245,8 @@ Ext.define('Ext.ux.Router', {
             else {
                 matches = route.manageArgs ? token.match(route.matcher) : tokenWithoutArgs.match(route.matcher);
                 
-                if (tokenWithoutArgs === '' && route.route === '/') {
+                // special index rule
+                if (tokenWithoutArgs === '' && route.route === '/' || tokenWithoutArgs === '/' && route.route === '') {
                     matches = [];
                 }
                 

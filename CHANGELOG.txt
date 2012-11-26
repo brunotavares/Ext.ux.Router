@@ -1,7 +1,24 @@
-22 Aug 2011 - version 1
- - Initial commits.
+26 Nov 2012 - version 2.1
+
+ - Add support for multiple apps. It's possible to have 3 Ext.Application instances
+   running with their own routes. Check tests/multi-app.html for an example.
+ 
+ - Make Router compatible with namespaced controllers like 'users.Settings'. Before we were 
+   auto-capitalizing every controller (user#index -> User controller) and it would break with
+   namespaced controllers (wrong: users.Settings#index -> User.Settings).
+
+ - Auto-parse arguments appended to the URL when they are not managed by the route. For example:
+   extract params from 'users/1?name=Bruno&company=Sencha' with route 'users/:id', but not with
+   'users/:id?*args'
+
+Thanks to @zam6ak and @revolunet for bug reports and pull requests.
+
+
+================================= 
+ 
 
 1 Nov 2012 - version 2
+
  - Replace routing engine using javascript-route-matcher (https://github.com/cowboy/javascript-route-matcher). Much more flexible and reliable. It also adds route validation. 
  
  - Bugs reported by users were fixed with new routing engine.
@@ -15,3 +32,11 @@
  - New example 'Single Page'.
  
  - Updated README, LICENSE and code documentation.
+
+
+=================================
+
+
+22 Aug 2011 - version 1
+
+ - Initial commits.
