@@ -15,7 +15,7 @@
 		
 		var app,
 			Router = Ext.ux.Router;
-				
+		
 		// Helpers
 		// -------------------
 		
@@ -25,12 +25,21 @@
 			show: Ext.emptyFn,
 			showAll: Ext.emptyFn
 		});
-		
+
+		Ext.define('TestApp.controller.subfolder.Users', {
+			extend: 'Ext.app.Controller',
+			show: Ext.emptyFn,
+			hide: Ext.emptyFn
+		});
+
 		function initApp(routes) {
 			
 			app = Ext.create('Ext.app.Application',{
 				name: 'TestApp',
-				controllers: ['Users'],
+				controllers: [
+					'Users',
+					'subfolder.Users'
+				],
 				routes: routes
 			});
 		}
@@ -136,7 +145,7 @@
 					initApp({
 						"users": {
 							regex: /^(users?)(?:\/(\d+)(?:\.\.(\d+))?)?/,
-							controller: 'users',
+							controller: 'Users',
 							action: 'index'
 						}
 					});
@@ -402,7 +411,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: /^\d+$/
 						}
@@ -439,7 +448,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: function(value) {
 								return value.match(/^\d+$/);
@@ -478,7 +487,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: '456'
 						}
@@ -503,7 +512,7 @@
 				beforeEach(function() {
 					initApp({
 						'users/:id/:index': {
-							controller: 'users',
+							controller: 'Users',
 							action: 'show',
 							id: /^\d+$/,
 							index: function(value) {
@@ -532,6 +541,27 @@
 					});
 				});
 				
+			});
+
+			describe("Routes with namespaced controllers", function() {
+
+				beforeEach(function() {
+					initApp({
+						'users/show/:id': 'subfolder.users#show',
+						'users/hide/:id': 'subfolder.Users#hide'
+					});
+				});
+
+				it("shouldn't match bad cased controller 'users/show/123'", function() {
+					expect(Router.parse('users/show/123')).toBe(false);
+				});
+
+				it("should match lowercase controller 'users/hide/123'", function() {
+					expect(Router.parse('users/hide/123')).toEqual({
+						id: "123"
+					});
+				});
+
 			});
 			
 		});
@@ -672,6 +702,21 @@
 				
 				if (args[0]) {
 					expect(args[0].id).toEqual('1');
+				}
+			});
+			
+			it("should provide parsed params with route 'users/1?name=Bruno&company=Sencha'", function() {
+				initApp({
+					'users/:id': 'users#index'
+				});
+				
+				Router.parse('users/1?name=Bruno&company=Sencha');
+
+				expect(args[0]).not.toBe(undefined);
+				
+				if (args[0]) {
+					expect(args[0].name).toEqual('Bruno');
+					expect(args[0].company).toEqual('Sencha');
 				}
 			});
 			

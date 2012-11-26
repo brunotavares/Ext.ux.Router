@@ -66,18 +66,26 @@ Ext.define('Ext.ux.Router', {
         me.routes = [];
         me.mixins.observable.constructor.call(me);
     },
-
+    
     /**
-     * Initializes Ext.History and processes the first token (generaly home, main, index, etc).
+     * Processes the routes for the given app and initializes Ext.History. Also parses
+     * the initial token, generally main, home, index, etc.
      * @private
      */
     init: function(app) {
         var me = this,
             history = Ext.History;
         
+        if (!app || !app.routes) {
+            return;
+        }
+        
+        me.processRoutes(app);
+            
         if (me.ready) {
             return;
         }
+        me.ready = true;
         
         me.addEvents(
             /**
@@ -108,10 +116,6 @@ Ext.define('Ext.ux.Router', {
             'dispatch'
         );
         
-        me.app = app;
-        me.ready = true;
-        me.processRoutes();
-        
         history.init();
 		history.on('change', me.parse, me);
 		
@@ -124,19 +128,13 @@ Ext.define('Ext.ux.Router', {
      * Convert routes string definied in Ext.Application into structures objects.
      * @private
      */
-    processRoutes: function() {
+    processRoutes: function(app) {
         var key,
-            appRoutes = this.app.routes;
-        
-        //<debug warn>
-        if (!appRoutes && Ext.isDefined(Ext.global.console)) {
-            Ext.global.console.warn("[Ext.ux.Router] No routes were found. Consider defining routes object in your Ext.application definition.");
-        }
-        //</debug>
+            appRoutes = app.routes;
         
         for (key in appRoutes) {
             if (appRoutes.hasOwnProperty(key)) {
-                this.routeMatcher(key, appRoutes[key]);
+                this.routeMatcher(app, key, appRoutes[key]);
             }
         }
     },
@@ -146,7 +144,7 @@ Ext.define('Ext.ux.Router', {
      * {@link https://github.com/cowboy/javascript-route-matcher javascript-route-matcher}
      * @private
      */ 
-    routeMatcher: function(route, rules) {
+    routeMatcher: function(app, route, rules) {
         var routeObj, action,
             me      = this,
             routes  = me.routes,
@@ -154,12 +152,13 @@ Ext.define('Ext.ux.Router', {
             reParam = /([:*])(\w+)/g,
             reEscape= /([-.+?\^${}()|\[\]\/\\])/g,
             names   = [];
-        
+
         if (rules.regex) {
             routeObj = {
+                app         : app,
                 route       : route,
                 regex       : rules.regex,
-                controller  : Ext.String.capitalize(rules.controller),
+                controller  : rules.controller,
                 action      : rules.action
             };
             
@@ -168,28 +167,28 @@ Ext.define('Ext.ux.Router', {
             routeObj.rules = rules;
         }
         else {
-            
             reRoute = reRoute.replace(reEscape, "\\$1").replace(reParam, function(_, mode, name) {
                 names.push(name);
                 return mode === ":" ? "([^/]*)" : "(.*)";
             });
             
             routeObj = {
-                route   : route,
-                names   : names,
-                matcher : new RegExp("^" + reRoute + "$")
+                app         : app,
+                route       : route,
+                names       : names,
+                matcher     : new RegExp("^" + reRoute + "$"),
+                manageArgs  : route.indexOf('?') !== -1
             };
             
             if (Ext.isString(rules)) {
                 action = rules.split('#');
                 
-                routeObj.controller = Ext.String.capitalize(action[0]);
+                routeObj.controller = action[0];
                 routeObj.action     = action[1];
                 routeObj.rules      = undefined;
             }
             else {
-                
-                routeObj.controller = Ext.String.capitalize(rules.controller);
+                routeObj.controller = rules.controller;
                 routeObj.action     = rules.action;
                 
                 delete rules.controller;
@@ -218,12 +217,16 @@ Ext.define('Ext.ux.Router', {
      */
     parse: function(token) {
         var route, matches, params, names, j, param, value, rules,
+            tokenArgs, tokenWithoutArgs,
             me      = this,
             routes  = me.routes,
             i       = 0,
             len     = routes.length;
-        
-        token = token||"";
+
+        token            = token||"";
+        tokenWithoutArgs = token.split('?');
+        tokenArgs        = tokenWithoutArgs[1];
+        tokenWithoutArgs = tokenWithoutArgs[0];
         
         for (; i < len; i++) {
             route = routes[i];
@@ -240,9 +243,9 @@ Ext.define('Ext.ux.Router', {
                 }
             }
             else {
-                matches = token.match(route.matcher);
+                matches = route.manageArgs ? token.match(route.matcher) : tokenWithoutArgs.match(route.matcher);
                 
-                if (token === '' && route.route === '/') {
+                if (tokenWithoutArgs === '' && route.route === '/') {
                     matches = [];
                 }
                 
@@ -262,6 +265,10 @@ Ext.define('Ext.ux.Router', {
                         }
                         
                         params[param] = value;
+                    }
+                    
+                    if (tokenArgs && !route.manageArgs) {
+                        params = Ext.applyIf(params, Ext.Object.fromQueryString(tokenArgs));
                     }
                     
                     if (matches && me.dispatch(token, route, params)) {
@@ -298,26 +305,22 @@ Ext.define('Ext.ux.Router', {
      */    
     dispatch: function(token, route, params) {
         var controller,
-            me      = this;
+            me = this;
         
         if (me.fireEvent('beforedispatch', token, route, params) === false) {
             return false;
         }
-
-        //<debug error>
-        controller = me.app.getModuleClassName(route.controller, 'controller');
-        controller = Ext.ClassManager.get(controller);
         
-        if (!controller && Ext.isDefined(Ext.global.console)) {
-            Ext.global.console.error("[Ext.ux.Router] Controller not found ", route.controller);
+        controller = me.getController(route);
+        
+        if (!controller) {
+            return false;
         }
-        //</debug>
-        
-        controller = me.app.getController(route.controller);
         
         //<debug error>
         if (!controller[route.action] && Ext.isDefined(Ext.global.console)) {
             Ext.global.console.error("[Ext.ux.Router] Controller action not found ", route.controller, route.action);
+            return false;
         }
         //</debug>
         
@@ -343,6 +346,44 @@ Ext.define('Ext.ux.Router', {
         else {
             history.add(token);
         }
+    },
+    
+    /**
+     * Utility method that receives a route and returns the  controller instance. 
+     * Controller name could be either the regular name (e.g. UserSettings), a 
+     * string to be capitalized (e.g. userSettings -> UserSettings) or even separated
+     * by namespace  (e.g. user.Settings).
+     */
+    getController: function(route) {
+        var controllerName, controllerCapitalized,
+            app     = route.app,
+            classMgr= Ext.ClassManager;
+
+        // try regular name
+        controllerName = app.getModuleClassName(route.controller, 'controller');
+        
+        if (!classMgr.get(controllerName)) {
+            
+            // try capitalized
+            controllerCapitalized = Ext.String.capitalize(route.controller);
+            controllerName = app.getModuleClassName(controllerCapitalized, 'controller');
+            
+            if (!classMgr.get(controllerName)) {
+                
+                //<debug>
+                if (Ext.isDefined(Ext.global.console)) {
+                    Ext.global.console.warn("[Ext.ux.Router] Controller not found ", route.controller);
+                }
+                //</debug>
+                
+                return false;
+            }
+
+            // fix controller name
+            route.controller = controllerCapitalized;
+        }
+        
+        return app.getController(controllerName);
     }
 },
 function() {
