@@ -159,7 +159,7 @@ Ext.define('Ext.ux.Router', {
             routeObj = {
                 route       : route,
                 regex       : rules.regex,
-                controller  : Ext.String.capitalize(rules.controller),
+                controller  : rules.controller,
                 action      : rules.action
             };
             
@@ -183,13 +183,13 @@ Ext.define('Ext.ux.Router', {
             if (Ext.isString(rules)) {
                 action = rules.split('#');
                 
-                routeObj.controller = Ext.String.capitalize(action[0]);
+                routeObj.controller = action[0];
                 routeObj.action     = action[1];
                 routeObj.rules      = undefined;
             }
             else {
                 
-                routeObj.controller = Ext.String.capitalize(rules.controller);
+                routeObj.controller = rules.controller;
                 routeObj.action     = rules.action;
                 
                 delete rules.controller;
@@ -310,6 +310,7 @@ Ext.define('Ext.ux.Router', {
         
         if (!controller && Ext.isDefined(Ext.global.console)) {
             Ext.global.console.error("[Ext.ux.Router] Controller not found ", route.controller);
+            return false;
         }
         //</debug>
         
@@ -318,6 +319,7 @@ Ext.define('Ext.ux.Router', {
         //<debug error>
         if (!controller[route.action] && Ext.isDefined(Ext.global.console)) {
             Ext.global.console.error("[Ext.ux.Router] Controller action not found ", route.controller, route.action);
+            return false;
         }
         //</debug>
         
