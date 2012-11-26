@@ -152,7 +152,7 @@ Ext.define('Ext.ux.Router', {
             reParam = /([:*])(\w+)/g,
             reEscape= /([-.+?\^${}()|\[\]\/\\])/g,
             names   = [];
-        
+
         if (rules.regex) {
             routeObj = {
                 app         : app,
@@ -167,17 +167,17 @@ Ext.define('Ext.ux.Router', {
             routeObj.rules = rules;
         }
         else {
-            
             reRoute = reRoute.replace(reEscape, "\\$1").replace(reParam, function(_, mode, name) {
                 names.push(name);
                 return mode === ":" ? "([^/]*)" : "(.*)";
             });
             
             routeObj = {
-                app     : app,
-                route   : route,
-                names   : names,
-                matcher : new RegExp("^" + reRoute + "$")
+                app         : app,
+                route       : route,
+                names       : names,
+                matcher     : new RegExp("^" + reRoute + "$"),
+                manageArgs  : route.indexOf('?') !== -1
             };
             
             if (Ext.isString(rules)) {
@@ -217,12 +217,16 @@ Ext.define('Ext.ux.Router', {
      */
     parse: function(token) {
         var route, matches, params, names, j, param, value, rules,
+            tokenArgs, tokenWithoutArgs,
             me      = this,
             routes  = me.routes,
             i       = 0,
             len     = routes.length;
-        
-        token = token||"";
+
+        token            = token||"";
+        tokenWithoutArgs = token.split('?');
+        tokenArgs        = tokenWithoutArgs[1];
+        tokenWithoutArgs = tokenWithoutArgs[0];
         
         for (; i < len; i++) {
             route = routes[i];
@@ -239,9 +243,9 @@ Ext.define('Ext.ux.Router', {
                 }
             }
             else {
-                matches = token.match(route.matcher);
+                matches = route.manageArgs ? token.match(route.matcher) : tokenWithoutArgs.match(route.matcher);
                 
-                if (token === '' && route.route === '/') {
+                if (tokenWithoutArgs === '' && route.route === '/') {
                     matches = [];
                 }
                 
@@ -261,6 +265,10 @@ Ext.define('Ext.ux.Router', {
                         }
                         
                         params[param] = value;
+                    }
+                    
+                    if (tokenArgs && !route.manageArgs) {
+                        params = Ext.applyIf(params, Ext.Object.fromQueryString(tokenArgs));
                     }
                     
                     if (matches && me.dispatch(token, route, params)) {

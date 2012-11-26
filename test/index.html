@@ -29,7 +29,7 @@
 		Ext.define('TestApp.controller.subfolder.Users', {
 			extend: 'Ext.app.Controller',
 			show: Ext.emptyFn,
-			hide: Ext.emptyFn,
+			hide: Ext.emptyFn
 		});
 
 		function initApp(routes) {
@@ -62,7 +62,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users': 'Users#index'
+						'users': 'users#index'
 					});
 				});
 
@@ -89,8 +89,8 @@
 				
 				beforeEach(function() {
 					initApp({
-						''			: 'Users#index',
-						'users/:id'	: 'Users#index'
+						''			: 'users#index',
+						'users/:id'	: 'users#index'
 					});
 				});
 
@@ -116,8 +116,8 @@
 				
 				beforeEach(function() {
 					initApp({
-						'/'			: 'Users#index',
-						'users/:id'	: 'Users#index'
+						'/'			: 'users#index',
+						'users/:id'	: 'users#index'
 					});
 				});
 
@@ -178,7 +178,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id': 'Users#show'
+						'users/:id': 'users#show'
 					});
 				});
 
@@ -205,7 +205,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id/:login': 'Users#show'
+						'users/:id/:login': 'users#show'
 					});
 				});
 
@@ -228,7 +228,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/*names': 'Users#showAll'
+						'users/*names': 'users#showAll'
 					});
 				});
 
@@ -255,7 +255,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/*ids/*names': 'Users#showAll'
+						'users/*ids/*names': 'users#showAll'
 					});
 				});
 
@@ -298,7 +298,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id/*roles/:name/*groups': 'Users#show'
+						'users/:id/*roles/:name/*groups': 'users#show'
 					});
 				});
 
@@ -318,7 +318,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id/:name/*roles/*groups': 'Users#show'
+						'users/:id/:name/*roles/*groups': 'users#show'
 					});
 				});
 
@@ -338,7 +338,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'search/:query/p:page': 'Users#index'
+						'search/:query/p:page': 'users#index'
 					});
 				});
 
@@ -356,7 +356,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'*first/complex-:part/*rest': 'Users#index'
+						'*first/complex-:part/*rest': 'users#index'
 					});
 				});
 
@@ -375,7 +375,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						':entity?*args': 'Users#index'
+						':entity?*args': 'users#index'
 					});
 				});
 
@@ -393,7 +393,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'*anything': 'Users#index'
+						'*anything': 'users#index'
 					});
 				});
 
@@ -573,7 +573,7 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id': 'Users#show'
+						'users/:id': 'users#show'
 					});
 				});
 				
@@ -650,8 +650,8 @@
 				
 				beforeEach(function() {
 					initApp({
-						'users/:id'		: 'Users#index',
-						'users/:action'	: 'Users#show'
+						'users/:id'		: 'users#index',
+						'users/:action'	: 'users#show'
 					});
 				});
 				
@@ -693,7 +693,7 @@
 			
 			it("should dispatch route 'users/:id' with 'users/1", function() {
 				initApp({
-					'users/:id': 'Users#index'
+					'users/:id': 'users#index'
 				});
 				
 				Router.parse('users/1');
@@ -702,6 +702,21 @@
 				
 				if (args[0]) {
 					expect(args[0].id).toEqual('1');
+				}
+			});
+			
+			it("should provide parsed params with route 'users/1?name=Bruno&company=Sencha'", function() {
+				initApp({
+					'users/:id': 'users#index'
+				});
+				
+				Router.parse('users/1?name=Bruno&company=Sencha');
+
+				expect(args[0]).not.toBe(undefined);
+				
+				if (args[0]) {
+					expect(args[0].name).toEqual('Bruno');
+					expect(args[0].company).toEqual('Sencha');
 				}
 			});
 			
