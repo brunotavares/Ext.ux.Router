@@ -686,7 +686,7 @@
 
 
 		describe("Controller Dispatch", function() {
-			var args;
+			var args, scope;
 			
 			beforeEach(function() {
 				args = [];
@@ -694,6 +694,7 @@
 				Ext.define('TestApp.controller.Users', {
 					extend: 'Ext.app.Controller',
 					index: function() {
+						scope = this;
 						args = Ext.Array.from(arguments);
 					}
 				});
@@ -726,6 +727,16 @@
 					expect(args[0].name).toEqual('Bruno');
 					expect(args[0].company).toEqual('Sencha');
 				}
+			});
+			
+			it("should dispatch for the same app controller, without duplicating controller instances", function() {
+				initApp({
+					'users/:id': 'users#index'
+				});
+				
+				var usersController = app.getController('Users');
+				Router.parse('users/1');
+				expect(scope).toBe(usersController);
 			});
 			
 		});

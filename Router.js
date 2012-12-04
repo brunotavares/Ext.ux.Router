@@ -356,20 +356,21 @@ Ext.define('Ext.ux.Router', {
      * by namespace  (e.g. user.Settings).
      */
     getController: function(route) {
-        var controllerName, controllerCapitalized,
-            app     = route.app,
-            classMgr= Ext.ClassManager;
+        var controllerFullName, controllerCapitalized,
+            app         = route.app,
+            classMgr    = Ext.ClassManager,
+            controller  = route.controller;
 
         // try regular name
-        controllerName = app.getModuleClassName(route.controller, 'controller');
+        controllerFullName = app.getModuleClassName(controller, 'controller');
         
-        if (!classMgr.get(controllerName)) {
+        if (!classMgr.get(controllerFullName)) {
             
             // try capitalized
-            controllerCapitalized = Ext.String.capitalize(route.controller);
-            controllerName = app.getModuleClassName(controllerCapitalized, 'controller');
+            controller          = Ext.String.capitalize(controller);
+            controllerFullName  = app.getModuleClassName(controller, 'controller');
             
-            if (!classMgr.get(controllerName)) {
+            if (!classMgr.get(controllerFullName)) {
                 
                 //<debug>
                 if (Ext.isDefined(Ext.global.console)) {
@@ -381,10 +382,10 @@ Ext.define('Ext.ux.Router', {
             }
 
             // fix controller name
-            route.controller = controllerCapitalized;
+            route.controller = controller;
         }
         
-        return app.getController(controllerName);
+        return app.getController(controller);
     }
 },
 function() {
