@@ -83,7 +83,7 @@ Ext.application({
             },
             
             beforedispatch: function(token, match, params) {
-                console.log('beforedispatch ' + token);
+                Ext.log('beforedispatch ' + token);
             },
             
             /**
