@@ -341,7 +341,7 @@ Ext.define('Ext.ux.Router', {
     redirect: function(token, preventDup) {
         var history = Ext.History;
         
-        if (preventDup !== true && history.getToken() === token) {
+        if (preventDup === true && history.getToken() === token) {
             this.parse(token);
         }
         else {
