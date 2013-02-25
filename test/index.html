@@ -55,7 +55,6 @@
 			Ext.ux.Router.clearListeners();
 		});
 		
-		
 		describe("Route Matching", function() {
 				
 			describe("Basic Route 'users'", function() {
@@ -396,7 +395,27 @@
 				
 			});
 			
+			describe("Route optional params", function() {
+				
+				beforeEach(function() {
+					initApp({
+						'users/:userID/role/*roleID': 'users#index'
+					});
+				});
 			
+				it("should match 'users/1/role/2'", function() {
+					expect(Router.parse('users/1/role/2')).toEqual({userID: '1', roleID: '2'});
+				});
+				
+				it("should match 'users/1/role/'", function() {
+					expect(Router.parse('users/1/role/')).toEqual({userID: '1', roleID: ''});
+				});
+				
+				it("shouldn't match 'users/1/role'", function() {
+					expect(Router.parse('users/1/role')).toBe(false);
+				});
+			});
+		
 			describe("Route anything '*anything'", function() {
 				
 				beforeEach(function() {
