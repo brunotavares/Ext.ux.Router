@@ -90,6 +90,10 @@ Ext.application({
              * For this example I'm using the dispatch event to render the view
              * based on the token. Each route points to a controller and action. 
              * Here I'm using these 2 information to get the view and render.
+             * Example:
+             * 
+             *  users/:id/edit -> controller Users, action edit ->
+             *  renders user.Edit view.
              */
             dispatch: function(token, match, params, controller) {
                 var view, viewClass, action,
